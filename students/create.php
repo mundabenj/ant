@@ -2,7 +2,7 @@
 // JSON Headers
 header('Content-Type: application/json'); // define content type as JSON
 header('Access-Control-Allow-Origin: *'); // allow access from any origin
-header('Access-Control-Allow-Methods: POST'); // allow POST method
+header('Access-Control-Allow-Methods: POST'); // allow only POST method and not GET, PUT, DELETE, OPTIONS
 header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Origin, Access-Control-Allow-Methods, Access-Control-Allow-Headers, Authorization, X-Requested-With'); // allow specific headers  
 
 // Verify that the request method is POST
@@ -26,11 +26,11 @@ $JSONData = json_decode($requestBody, true); // associative array
 
 // Retrieve form data
 $FORMData = [
-    'fullname' => $_POST['fullname'] ?? null,
-    'email' => $_POST['email'] ?? null
+    'fullname' => trim($_POST['fullname'] ?? ''),
+    'email' => trim($_POST['email'] ?? '')
 ];
 
-// Choose between JSON and Form Data
+// Determine which data to use: JSON or Form Data
 if(!empty($JSONData)) {
     $requestData = $JSONData;
 } else {
@@ -41,7 +41,7 @@ if(!empty($JSONData)) {
 if(empty($requestData['fullname']) || empty($requestData['email'])) {
     $response = [
         'status'=> http_response_code(400), // Bad Request
-        'message'=> 'Bad Request. fullname and email are required.',
+        'message'=> 'Missing required fields: fullname and email are required.',
     ];
     echo json_encode($response);
     exit();
